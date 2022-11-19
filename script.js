@@ -1,5 +1,17 @@
 "use strict"
 
+
+//TODO: 
+// input name player1 player2
+// check if score =5 -> end and print score
+// if there is no winner of the match
+// prohibit overwrite used squares
+// html / css styling 
+
+
+
+
+
 //module for creating playground grid 
 const renderPlayground = (()=>{
     const container = document.getElementById("container");
@@ -24,7 +36,14 @@ const renderPlayground = (()=>{
         })
         
     }
-    return {create, remove};
+
+    const restartPlayground = () => {
+        renderPlayground.remove()
+        gameBoard.gB=["", "", "", "", "", "", "", "", ""];
+        renderPlayground.create()
+
+    }
+    return {create, remove, restartPlayground};
 }
 )();
 
@@ -42,42 +61,83 @@ const gameBoard = (()=>{
         if((gB[2]===gB[5] && gB[8]===gB[2]) && gB[5] != "") winner= gB[2];
         if((gB[0]===gB[4] && gB[8]===gB[0]) && gB[4] != "") winner= gB[0];
         if((gB[2]===gB[4] && gB[6]===gB[2]) && gB[4] != "") winner= gB[2];
+        
+        if(winner == player1.getSymbol()){
+            gameFlow.winner();
+        }
 
-        console.log(winner)
-        return winner
+        
+        return winner 
     }
     return{ gB, checkWinner}
 })();
 
 const gameFlow = (()=>{
-    let clickCounter=0;
+    let clickCount=0;
     const clickOnBoard = ()=>{
         let getDivID = document.querySelectorAll(".square");
         let divID;
-
-        
-
-        let player=clickCounter%2==0? "X":"Y";
-
-        
-
+        let playerMark=clickCount%2==0?player1.getSymbol():player2.getSymbol();
         getDivID.forEach((e) =>{
             e.addEventListener("click", function(){
-                
                 divID = e.id
-                gameBoard.gB[divID]=player;
+                if(gameBoard.gB[divID]=="") {
+                    gameBoard.gB[divID]=playerMark;
+                    clickCount++;
+                }
                 renderPlayground.remove()
                 renderPlayground.create()
                 gameBoard.checkWinner()
-                clickCounter++;
                 
+                console.log(clickCount)
+                if(clickCount == 9) noWinner();
             })
-            
         })
-        
     }
-    return{clickOnBoard}
+    const noWinner = () => {
+        //add some more cool stuff
+        console.log("No winner, try again!");
+        renderPlayground.restart()
+        
+
+    }
+
+    const winner = () => {
+        //something
+        console.log("We got a winner here!")
+        renderPlayground.restartPlayground();
+    }
+
+
+
+    return{clickOnBoard, winner, noWinner}
 })();
+
+
+const Player = (name, score, symbol) => {
+    const getSymbol = ()=> symbol;
+    const getName = () => name;
+    let winMatch = (otherScore) => {
+        return `${name} won the match! Score ${score} : ${otherScore}!`
+    }
+    return{winMatch, getName, getSymbol, score}
+}
+
+
+
+
+
+const player1 = Player("jmeno1_input", 0, "X");
+const player2 = Player("jmeno2_input", 0, "0");
+
+
+
+
+
+
+
+
+
 
 
 renderPlayground.create();
