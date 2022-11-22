@@ -44,18 +44,19 @@ const renderPlayground = (()=>{
         const container = document.getElementById("container");
         const btn = document.createElement("button");
         btn.innerText="click to continue"
-        gameFlow.notice("click to continue");
+        //gameFlow.notice("click to continue");
         container.appendChild(btn)
         btn.addEventListener("click", resetArrayWinner);
         function resetArrayWinner(){
             console.log("___WINDOW ADD EVENT CLICK_")
-            
+
             gameBoard.gB=["", "", "", "", "", "", "", "", ""];
             gameBoard.resetWinner("");
             //gameFlow.clickCount=0; <––––––––– WHY DOESNT WORK?!?!?!
-            remove()
-            startGame()
+            remove();
+            startGame();
             btn.remove();
+            gameFlow.delNotice();
 
             gmBoard.removeEventListener("click", resetArrayWinner);
         }
@@ -173,10 +174,13 @@ const gameFlow = (()=>{
         msg.className="pInfo";
         msg.innerHTML=message;
         infoBoard.appendChild(msg);
-
+    }
+    const delNotice = () =>{
+        let msg = document.getElementsByClassName("pInfo")[0];
+        msg.remove()
     }
 
-    return{clickOnBoard, winner, noWinner, notice}
+    return{clickOnBoard, winner, noWinner, notice, delNotice}
 })();
 
 
