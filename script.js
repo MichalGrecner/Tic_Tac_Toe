@@ -14,7 +14,7 @@
 
 //module for creating playground grid 
 const renderPlayground = (()=>{
-    const container = document.getElementById("container");
+    const gmBoard = document.getElementById("gameBoard");
     const create=()=>{
         console.log("spustena fce create")
         let squareCounter=0;
@@ -25,7 +25,7 @@ const renderPlayground = (()=>{
                 square.id=squareCounter;
                 square.innerHTML=gameBoard.gB[squareCounter];
                 squareCounter++;
-                container.appendChild(square);
+                gmBoard.appendChild(square);
             }
         }
         //gameFlow.clickOnBoard();
@@ -41,13 +41,34 @@ const renderPlayground = (()=>{
 
     const restartPlayground = () => {
         console.log("prave bezi restartPlayground_____________________________")
+        const container = document.getElementById("container");
+        const btn = document.createElement("button");
+        btn.innerText="click to continue"
+        gameFlow.notice("click to continue");
+        container.appendChild(btn)
+        btn.addEventListener("click", resetArrayWinner);
+        function resetArrayWinner(){
+            console.log("___WINDOW ADD EVENT CLICK_")
+            
+            gameBoard.gB=["", "", "", "", "", "", "", "", ""];
+            gameBoard.resetWinner("");
+            //gameFlow.clickCount=0; <––––––––– WHY DOESNT WORK?!?!?!
+            remove()
+            startGame()
+            btn.remove();
+
+            gmBoard.removeEventListener("click", resetArrayWinner);
+        }
+
+
+
         //remove();
         
         //gameBoard.resetgB();
-        gameBoard.gB=["", "", "", "", "", "", "", "", ""];
-        gameBoard.winner="";
-        gameBoard.resetgB(["", "", "", "", "", "", "", "", ""]);
-        gameBoard.resetWinner("");
+        
+        //gameBoard.winner="";
+        //gameBoard.resetgB(["", "", "", "", "", "", "", "", ""]);
+        
 
         
         //startGame();
@@ -62,14 +83,12 @@ const gameBoard = (()=>{
     let gB=["", "", "", "", "", "", "", "", ""];
     let winner="";
 
-    let resetgB = (newVal) => {
-        gB=newVal;
-        console.log("gB v gameBoard/resetgB" + gB)
-        return gB
-    }
+    // let resetgB = (newVal) => {
+    //     gB=newVal;
+    //     console.log("gB v gameBoard/resetgB" + gB)
+    //     return gB
+    // }
     let resetWinner = (newVal) => {winner = newVal}
-
-
 
     let checkWinner=(gB)=>{
         
@@ -92,37 +111,49 @@ const gameBoard = (()=>{
         
         
     }
-    return{resetWinner, resetgB ,winner, gB, checkWinner} //odebrano resetgB
+    return{resetWinner, winner, gB, checkWinner} //odebrano resetgB,resetgB 
 })();
 
 const gameFlow = (()=>{
     let clickCount=0;
+    
     const clickOnBoard = ()=>{
         let getDivID = document.querySelectorAll(".square");
         let divID;
         console.log("cekam na kliknuti")
         let playerMark=clickCount%2==0?player1.getSymbol():player2.getSymbol();
         getDivID.forEach((e) =>{
-            e.addEventListener("click", function(){
+            e.addEventListener("click", function ClickOnSquare(){
+
+                console.log(" CLICK COUNT v GAMEFLOW/click on board: " +clickCount)
+                
                 divID = e.id
                 if(gameBoard.gB[divID]=="") {
                     gameBoard.gB[divID]=playerMark;
                     clickCount++;
                 }
+                console.log("GAMEBOARD V GAMEFLOW: " + gameBoard.gB)
+
                 gameBoard.checkWinner(gameBoard.gB)
+                if(clickCount == 9) noWinner();
+                
                 renderPlayground.remove()
                 renderPlayground.create()
                 
-                
-                console.log(" CLICK COUNT v GAMEFLOW/click on board: " +clickCount)
-                if(clickCount == 8) noWinner();
                 clickOnBoard();
             })
+            
         })
+
+
+
+
+        
     }
     const noWinner = () => {
         //add some more cool stuff
-        console.log("No winner, try again!");
+        notice("No winner, try again!");
+        clickCount=0; 
         renderPlayground.restartPlayground()
         
 
@@ -130,16 +161,24 @@ const gameFlow = (()=>{
 
     const winner = (winnnerPlayer) => {
         //something
-        
-        console.log(`Winner of this round is ${winnnerPlayer.getName()}`)
         clickCount=0; 
-        renderPlayground.restartPlayground();
+        notice(`Winner of this round is ${winnnerPlayer.getName()}`)
         
+        renderPlayground.restartPlayground();
+    }
+
+    const notice = (message) => {
+        let infoBoard  = document.getElementById("info");
+        let msg = document.createElement("p");
+        msg.className="pInfo";
+        msg.innerHTML=message;
+        infoBoard.appendChild(msg);
 
     }
 
-    return{clickOnBoard, winner, noWinner}
+    return{clickOnBoard, winner, noWinner, notice}
 })();
+
 
 
 const Player = (name, score, symbol) => {
@@ -161,7 +200,7 @@ const player2 = Player("MYS", 0, "0");
 startGame()
 
 function startGame () { 
-    console.log("jede startGame?")
+    
 
     renderPlayground.create(); 
     gameFlow.clickOnBoard();
