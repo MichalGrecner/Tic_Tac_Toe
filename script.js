@@ -83,6 +83,7 @@ const renderPlayground = (()=>{
 const gameBoard = (()=>{
     let gB=["", "", "", "", "", "", "", "", ""];
     let winner="";
+    console.log("SPUSTENO GAMEBOARD")
 
     // let resetgB = (newVal) => {
     //     gB=newVal;
@@ -106,7 +107,7 @@ const gameBoard = (()=>{
         
        // condition who is the winner
         if(winner == player1.getSymbol() || winner == player2.getSymbol()){
-            let winRoundPlayer = winner== player1.getSymbol ()? player1 : player2;
+            let winRoundPlayer = winner== player1.getSymbol()? player1 : player2;
             gameFlow.winner(winRoundPlayer);
         }
         
@@ -163,7 +164,8 @@ const gameFlow = (()=>{
     const winner = (winnnerPlayer) => {
         //something
         clickCount=0; 
-        notice(`Winner of this round is ${winnnerPlayer.getName()}`)
+        //notice(`Winner of this round is ${winnnerPlayer.getName()}`)
+        notice(`Winner is ${winnnerPlayer.name}`)
         
         renderPlayground.restartPlayground();
     }
@@ -184,28 +186,52 @@ const gameFlow = (()=>{
 })();
 
 
-
-const Player = (name, score, symbol) => {
+const Player = ( name, score, symbol) => {
     const getSymbol = ()=> symbol;
-    const getName = () => name;
+    //const getName = () => name;
     let winMatch = (otherScore) => {
         return `${name} won the match! Score ${score} : ${otherScore}!`
     }
-    return{winMatch, getName, getSymbol, score}
+    return{winMatch, getSymbol, score, name}
 }
 
 
 
 
+const addNames = (()=>{
+    const playerOneInput = document.getElementById("playerOne");
+    const playerTwoInput = document.getElementById("playerTwo");
+    const submit = document.getElementById("submit");
+    const form = document.getElementById("form");
+    
+    
+    const listener = submit.addEventListener("click",function  eventHandler(e){ 
+        e.preventDefault();
+        var name1 = playerOneInput.value
+        var name2 = playerTwoInput.value
+        player1.name=name1
+        player2.name=name2
+        console.log(player1)
+        form.remove();
+        console.log("PRVNI??")
+        startGame();
+        
+    })
+    
+})();
 
-const player1 = Player("HAD", 0, "X");
-const player2 = Player("MYS", 0, "0");
 
-startGame()
+
+
+var player1 = Player("", 0, "X");
+var player2 = Player("", 0, "0");
+
+
+
+
+//startGame()
 
 function startGame () { 
-    
-
     renderPlayground.create(); 
     gameFlow.clickOnBoard();
 }
