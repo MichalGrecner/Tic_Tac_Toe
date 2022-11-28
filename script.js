@@ -17,19 +17,19 @@ const renderPlayground = (()=>{
         }
         
     }
+    //removes grid 
     const remove=()=>{
-        console.log("spustena fce REMOVE")
         let squares = document.querySelectorAll(".square");
         squares.forEach((e)=>{
             e.remove();
         })
         
     }
-
+    //when play again, triggered from function winner/noWinner
     const restartPlayground = () => {
         const info = document.getElementById("info");
-        const btnAgain = document.createElement("button");
-        const btnQuit = document.createElement("button");
+        const btnAgain = document.createElement("button"); //button play again
+        const btnQuit = document.createElement("button"); //button quit - goes back to input form
         btnAgain.innerText="PLAY AGAIN!";
         btnQuit.innerText="QUIT";
         info.appendChild(btnAgain);
@@ -38,27 +38,27 @@ const renderPlayground = (()=>{
         btnAgain.addEventListener("click", resetArrayWinner);
         btnQuit.addEventListener("click", quitSession);
 
-        function resetArrayWinner(){
-            gameBoard.gB=["", "", "", "", "", "", "", "", ""];
-            gameBoard.resetWinner("");
-            gameFlow.changeStatus(true);
-            remove();
-            startGame();
-            btnAgain.remove();
-            btnQuit.remove();
-            gameFlow.delNotice();
+        function resetArrayWinner(){ //when play again is pressed
+            gameBoard.gB=["", "", "", "", "", "", "", "", ""]; //resets game board array
+            gameBoard.resetWinner(""); //set winner to ""
+            remove();//removes gameBoard grid
+            gameFlow.changeStatus(true); //enables eventListener for gameBoard
+            startGame(); //render new gameBoard
+            btnAgain.remove(); //removes button "Play Again"
+            btnQuit.remove(); // removes button "Quit"
+            gameFlow.delNotice(); // removes info message 
             gmBoard.removeEventListener("click", resetArrayWinner);
         }
 
-        function quitSession(){
+        function quitSession(){ //when quit is pressed
             remove();
             btnAgain.remove();
             btnQuit.remove();
             gameFlow.delNotice();
             gameBoard.gB=["", "", "", "", "", "", "", "", ""];
-            gameBoard.resetWinner("");
-            document.getElementById("inputs").style.display="block";
-            const playerOneInput = document.getElementById("playerOne").value="";
+            gameBoard.resetWinner(""); 
+            document.getElementById("inputs").style.display="block"; //shows input form
+            const playerOneInput = document.getElementById("playerOne").value=""; 
             const playerTwoInput = document.getElementById("playerTwo").value="";
             gameFlow.changeStatus(true)
         }
@@ -72,7 +72,7 @@ const gameBoard = (()=>{
     let winner="";
     let resetWinner = (newVal) => {winner = newVal}
 
-    let checkWinner=(gB)=>{
+    let checkWinner=(gB)=>{ //defines winning condition
         if((gB[0]===gB[1] && gB[2]===gB[0]) && gB[1] != "") winner= gB[0];
         if((gB[3]===gB[4] && gB[5]===gB[3]) && gB[4] != "") winner= gB[3];
         if((gB[6]===gB[7] && gB[8]===gB[6]) && gB[7] != "") winner= gB[6];
@@ -82,13 +82,13 @@ const gameBoard = (()=>{
         if((gB[0]===gB[4] && gB[8]===gB[0]) && gB[4] != "") winner= gB[0];
         if((gB[2]===gB[4] && gB[6]===gB[2]) && gB[4] != "") winner= gB[2];
         
-       // condition who is the winner
+       //who is the winner
         if(winner == player1.getSymbol() || winner == player2.getSymbol()){
-            let winRoundPlayer = winner== player1.getSymbol()? player1 : player2;
+            let winRoundPlayer = winner== player1.getSymbol()? player1 : player2; //defines who is the winnner
             gameFlow.winner(winRoundPlayer);
         }
     }
-    return{resetWinner, winner, gB, checkWinner} //odebrano resetgB,resetgB 
+    return{resetWinner, winner, gB, checkWinner} 
 })();
 
 const gameFlow = (()=>{
@@ -98,13 +98,13 @@ const gameFlow = (()=>{
     const clickOnBoard = ()=>{
         let getDivID = document.querySelectorAll(".square");
         let divID;
-        let playerMark=clickCount%2==0?player1.getSymbol():player2.getSymbol();
+        let playerMark=clickCount%2==0?player1.getSymbol():player2.getSymbol();// playmark = X or O
         
-        if (status){
+        if (status){ //set to false when winner/noWinner is inicialized to prevent click on Board when the game is over
             getDivID.forEach((e) =>{
                 e.addEventListener("click", function ClickOnSquare(){
                     divID = e.id
-                    if(gameBoard.gB[divID]=="") {
+                    if(gameBoard.gB[divID]=="") { //prevent from clicking on alread used position
                         gameBoard.gB[divID]=playerMark;
                         clickCount++;
                     }
@@ -129,7 +129,7 @@ const gameFlow = (()=>{
         notice(`${winnnerPlayer.name} is the winner!`)
         renderPlayground.restartPlayground();
     }
-    const notice = (message) => {
+    const notice = (message) => { //create info message if winner or noWinner
         let infoBoard  = document.getElementById("info");
         let msg = document.createElement("p");
         msg.className="pInfo";
@@ -151,7 +151,7 @@ const Player = (name, symbol) => {
     return{ getSymbol, name}
 }
 
-const addNames = (()=>{
+const addNames = (()=>{ //input form behaviour
     const playerOneInput = document.getElementById("playerOne");
     const playerTwoInput = document.getElementById("playerTwo");
     const submit = document.getElementById("submit");
